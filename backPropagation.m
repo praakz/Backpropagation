@@ -1,21 +1,13 @@
-function [ l_delta, l_error ] = backPropagation( l,y,synMatrix )
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+function [ l_delta, l_error ] = backPropagation( l,y,synMatrix,numHiddenLayers )
+%Backpropagation
 
 % Back propagation of errors using the chain rule.
-    l3_error = y - l{4};
+    l_error{numHiddenLayers} = y - l{numHiddenLayers+1};
     
-    l3_delta = l3_error .* activationFunction(l{4}, 1);
-    
-    l2_error = l3_delta * synMatrix{3}.';
-    
-    l2_delta = l2_error .* activationFunction(l{3}, 1);
-    
-    l1_error = l2_delta * synMatrix{2}.';
-    
-    l1_delta = l1_error .* activationFunction(l{2}, 1);
-    
-    l_delta = {l1_delta l2_delta l3_delta};
-    l_error = {l1_error l2_error l3_error};
+    for k = numHiddenLayers:-1:2
+       l_delta{k} = l_error{k} .* activationFunction(l{k+1}, 1);
+       l_error{k-1} = l_delta{k} * synMatrix{k}.';
+    end
+    l_delta{1} = l_error{1} .* activationFunction(l{2}, 1);
 end
 
